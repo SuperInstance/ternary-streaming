@@ -113,6 +113,20 @@ fn main() {
 3. **Sentiment stream analysis** — Track running statistics and detect sentiment transitions in social media feeds.
 4. **Embedded systems** — Process ternary sensor data on microcontrollers with no OS and limited memory (`no_std` compatible).
 
+## Known Limitations
+
+- **StreamWindow recomputes `sum()` and `majority()` from scratch on every call**: Both methods iterate the entire `VecDeque` buffer rather than maintaining running totals. For a window of size W, each query is O(W). If you call `sum()` on every push, total processing becomes O(N×W) instead of O(N).
+
+- **StreamDetector only matches contiguous patterns**: `StreamDetector::feed()` checks if the last `pattern.len()` values exactly match the pattern. It cannot detect patterns with wildcards, optional elements, or gaps. Partial matches that are interrupted by one wrong value are discarded entirely — no fuzzy matching.
+
+- **StreamAggregator uses fixed-point mean (×1000)**: `mean_milli()` computes `sum × 1000 / count`, which truncates toward zero. For very long streams (count > 2¹⁹), the `i64` sum can overflow if the stream is biased toward Pos (+1). A stream of all Pos values overflows at ~9.2 × 10¹⁸ elements.
+
+- **Downsampling with `SampleMethod::Sum` loses magnitude**: The Sum method adds ternary values and maps positive→Pos, negative→Neg, zero→Zero. A group of `[Pos, Neg]` sums to 0 → Zero, which is the same result as `[Zero, Zero]`. The magnitude information is discarded.
+
+- **`StreamSampler::flush()` returns a partial group**: If the input length isn't divisible by the downsample factor, `flush()` emits a potentially unrepresentative partial group. No warning is provided that this last sample has fewer contributing values.
+
+- **TransitionDetector doesn't debounce**: `feed_detailed()` fires on every value change. For noisy ternary streams that oscillate rapidly (e.g., Pos, Neg, Pos, Neg), this produces a transition event for every element. No hysteresis or holdoff mechanism is available.
+
 ## Ecosystem
 
 - [`ternary-regex`](https://github.com/user/ternary-regex) — Full regex engine for ternary sequences
