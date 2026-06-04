@@ -1,0 +1,10 @@
+[package]
+name = "ternary-streaming"
+version = "0.1.0"
+edition = "2021"
+description = "Streaming processing of ternary signals with sliding windows, aggregation, pattern detection, and downsampling"
+license = "MIT"
+authors = ["SuperInstance"]
+repository = "https://github.com/SuperInstance/ternary-streaming"
+keywords = ["ternary", "streaming", "signal", "processing"]
+categories = ["algorithms", "data-structures"]
