@@ -136,3 +136,11 @@ fn main() {
 ## License
 
 MIT
+
+## See Also
+- **ternary-bus** — related
+- **ternary-channel** — related
+- **ternary-pipeline** — related
+- **ternary-flux** — related
+- **ternary-event** — related
+
